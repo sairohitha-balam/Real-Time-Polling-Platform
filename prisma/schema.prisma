@@ -1,0 +1,70 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Comes from .env
+}
+
+// Organizer accounts
+model Organizer {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // Hashed password
+  sessions  Session[]
+  createdAt DateTime @default(now())
+}
+
+// A polling session
+model Session {
+  id          String     @id @default(cuid())
+  title       String
+  joinCode    String     @unique // 6-char code for joining
+  status      SessionStatus @default(PENDING) // PENDING, ACTIVE, STOPPED
+  organizer   Organizer  @relation(fields: [organizerId], references: [id])
+  organizerId String
+  questions   Question[]
+  createdAt   DateTime   @default(now())
+  
+  @@index([organizerId])
+}
+
+// A single question in a session
+model Question {
+  id        String   @id @default(cuid())
+  text      String
+  options   Option[]
+  session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String
+  
+  @@index([sessionId])
+}
+
+// A single answer option for a question
+model Option {
+  id        String   @id @default(cuid())
+  text      String
+  votes     Int      @default(0) // Denormalized count for fast reads
+  question  Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId String
+  
+  @@index([questionId])
+}
+
+// To track votes for abuse prevention
+model VoteRecord {
+  id           String @id @default(cuid())
+  identifier   String // IP address or fingerprint
+  questionId   String
+  
+  @@unique([identifier, questionId]) // Prevents a single ID from voting on the same question twice
+}
+
+enum SessionStatus {
+  PENDING // Created but not yet live
+  ACTIVE  // Accepting votes
+  STOPPED // Voting closed
+}
