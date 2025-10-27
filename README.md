@@ -143,16 +143,22 @@ You can run this project either with Docker (recommended for one-command setup) 
 
 **Prerequisites:** Docker & Docker Compose
 
-1.  Create a `.env` file in the project root. You only need to add your `JWT_SECRET`:
-    ```.env
-    JWT_SECRET="your-very-strong-32-character-secret-key"
-    # The database and redis variables are handled by docker-compose
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/sairohitha-balam/Real-Time-Polling-Platform
+    cd Real-Time Polling Platform
     ```
-2.  Build and run all services in detached mode:
+2.  Create your `.env` file from the example:
+    ```bash
+    cp .env.example .env
+    ```
+3.  Open the new `.env` file and **add your `JWT_SECRET`**. You can use the default database/redis values.
+
+4.  Build and run all services in detached mode:
     ```bash
     docker-compose up -d --build
     ```
-3.  The application is now running:
+5.  The application is now running:
     * **API Server:** `http://localhost:4000`
     * **API Docs:** `http://localhost:4000/api-docs`
 
@@ -160,22 +166,23 @@ You can run this project either with Docker (recommended for one-command setup) 
 
 **Prerequisites:** Node.js, PostgreSQL, Redis
 
-1.  Install dependencies:
+1.  Clone the repository and install dependencies:
     ```bash
+    git clone https://github.com/sairohitha-balam/Real-Time-Polling-Platform
+    cd Real-Time Polling Platform
     npm install
     ```
-2.  Set up your `.env` file with your database, Redis, and JWT secret:
-    ```.env
-    DATABASE_URL="postgresql://user:password@localhost:5432/polldb"
-    REDIS_URL="redis://localhost:6379"
-    JWT_SECRET="your-very-strong-32-character-secret-key"
-    PORT="4000"
+2.  Create and configure your `.env` file:
+    ```bash
+    cp .env.example .env
     ```
-3.  Run the database migrations:
+3.  Open the new `.env` file and **set your `JWT_SECRET`**. You also must confirm that your `DATABASE_URL` and `REDIS_URL` match your local setup.
+
+4.  Run the database migrations:
     ```bash
     npx prisma migrate dev
     ```
-4.  Run the application in **two separate terminals**:
+5.  Run the application in **two separate terminals**:
 
     * **Terminal 1 (API Server):**
         ```bash
